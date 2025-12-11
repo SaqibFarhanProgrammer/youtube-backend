@@ -1,1 +1,40 @@
-node_modules
+const fs = require('fs');
+const path = require('path');
+
+const gitignoreContent = `# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# Optional
+*.tmp
+*.bak
+`;
+
+const outputPath = path.join(process.cwd(), '.gitignore');
+fs.writeFileSync(outputPath, gitignoreContent);
+console.log('.gitignore created successfully!');
