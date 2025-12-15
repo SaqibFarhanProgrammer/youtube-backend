@@ -1,13 +1,11 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const userschema = new mongoose.Schema({
-    id : {
-        type: String 
-    }
-    , 
-    WatchHistory : {
-        type: Array,
-        default : []
-    }
-    
-})
+  id: {
+    type: String,
+  },
+  WatchHistory: {
+    type: Array,
+    default: [],
+  },
+});
