@@ -1,28 +1,22 @@
 import mongoose from 'mongoose';
-import { DB_NAME } from './constains';
-import express from 'express';
-import connectDB from './db';
+import { DB_NAME } from './constent.js';
+import dotenv from 'dotenv';
+import connectDB from './db/index.js';
+import { app } from './app.js';
 
-
+dotenv.config({
+  path: './env',
+});
 
 connectDB()
+  .then(() => {
+    app.listen(process.env.PORT || 9000, () => {});
+  })
+  .catch((err) => {
+    console.log('MongoDB Connection Faild From Index.js Root', err);
+  });
 
 
-
-(async () => {
-  try {
-    await mongoose.connect(`${process.env.MONGO_DB_URL}/${DB_NAME}`);
-
-    app.once('error', (error) => {
-      console.log(`Connected to MongoDB database: ${DB_NAME}`);
-      throw error;
-    });
-
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    throw error;
-  }
-})();
+// connectDB().then(() => {
+//   console.log('d');
+// });
