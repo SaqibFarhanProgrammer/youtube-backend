@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import JWT from 'jsonwebtoken';
+import BCRYPT from 'bcrypt';
 const userschema = new mongoose.Schema(
   {
     username: {
@@ -51,5 +53,10 @@ const userschema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userschema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = BCRYPT.hash(this.password, 10);
+});
 
 export const User = mongoose.model('User', userschema);
