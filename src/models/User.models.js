@@ -57,6 +57,39 @@ const userschema = new mongoose.Schema(
 userschema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = BCRYPT.hash(this.password, 10);
+  next();
 });
+
+userschema.methods.isPasswordCorrect = async function (password) {
+  return await BCRYPT.compare(password, this.password);
+};
+
+userschema.methods.generateAccessToken = function () {
+  return JWT.sign(
+    {
+      _id: this._id,
+      username: this.username,
+      password: this.password,
+      fullname: this.fullname,
+    },
+
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+userschema.methods.generateRefreshToken = function () {
+  return JWT.sign(
+    {
+      _id: this._id,
+    },
+
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 
 export const User = mongoose.model('User', userschema);
