@@ -9,6 +9,11 @@ dotenv.config({
   path: './env',
 });
 
+function ajasd (params) {
+  logger.info('asdasd');
+    
+}
+
 connectDB()
   .then(() => {
     app.listen(process.env.PORT || 9000, () => {});
@@ -17,7 +22,7 @@ connectDB()
     console.log('MongoDB Connection Faild From Index.js Root', err);
   });
 
-UploadOnCloudinery()
+UploadOnCloudinery();
 // connectDB().then(() => {
 //   console.log('d');
 // });
