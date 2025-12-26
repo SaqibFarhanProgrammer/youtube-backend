@@ -6,7 +6,7 @@ import { app } from './app.js';
 import { UploadOnCloudinery } from './utils/cloudinery.js';
 
 dotenv.config({
-  path: './env',
+  path: './.env',
 });
 
 function ajasd (params) {

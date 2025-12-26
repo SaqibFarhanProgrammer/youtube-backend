@@ -6,11 +6,11 @@ const router = Router();
 router.route('/register').post(
   upload.fields([
     {
-      name: 'avatar',
+      name: 'Avatar',
       maxCount: 1,
     },
     {
-      name: 'coverPhoto',
+      name: 'CoverPhoto',
       maxCount: 1,
     },
   ]),
