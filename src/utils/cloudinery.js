@@ -20,6 +20,8 @@ async function UploadOnCloudinery(filePath) {
       cloudineryresponse.url
     );
 
+    fs.unlinkSync(filePath);
+
     return cloudineryresponse;
   } catch (error) {
     fs.unlinkSync(filePath);

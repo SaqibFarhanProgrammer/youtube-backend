@@ -27,12 +27,12 @@ const userschema = new mongoose.Schema(
       trim: true,
       index: true,
     },
-    image: {
+    Avatar: {
       type: String, //cloudnery
       required: true,
     },
 
-    coverImage: {
+    CoverPhoto: {
       type: String,
     },
     watchHistory: [
@@ -55,10 +55,14 @@ const userschema = new mongoose.Schema(
 );
 
 userschema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await BCRYPT.hash(this.password, 10);
-  next();
-});
+  try {
+    if (!this.isModified('password')) return next();
+    this.password = await BCRYPT.hash(this.password, 10);
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+}); 
 
 userschema.methods.isPasswordCorrect = async function (password) {
   return await BCRYPT.compare(password, this.password);
