@@ -61,7 +61,7 @@ userschema.pre('save', async function (next) {
     next();
   } catch (error) {
     console.log(error);
-  }
+  } 
 }); 
 
 userschema.methods.isPasswordCorrect = async function (password) {
