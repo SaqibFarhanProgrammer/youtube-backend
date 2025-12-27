@@ -3,7 +3,22 @@ import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/User.models.js';
 import { UploadOnCloudinery } from '../utils/cloudinery.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+
+const generateAccesAndRefreshToken = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accesToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    user.refreshTokens = refreshToken;
+    user.save({ validateBeforeSave: false });
+    return { accesToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, 'somthing went wrong');
+  }
+};
+
 // register user code here
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password, username, Fullname } = req.body;
   if (
@@ -58,21 +73,27 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // sabse pehle kaam user se email or password lena
   const { email, password } = req.body;
-  // dusra kaam usko validate karna
-  if (!email) return new ApiError('email is required');
-  if (!password) return new ApiError('password is required');
-  // uske abad jo user aya hai usko res mein bhejna
-  const LoginUserData = await User.findOne({
-    $or: [{ email }, { password }],
-  });
+  if (!email) throw new ApiError('email is required');
+  const user = await User.findOne({ email });
 
-  if (!LoginUserData) return new ApiError('invelid cridintiols');
+  if (!user) throw new ApiError('invelid cridintiols');
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) throw new ApiError('invelid Password ');
+
+  const { accesToken, refreshToken } = await generateAccesAndRefreshToken(
+    user._id
+  );
+
+  const loggedinUser = await User.findById(user._id).select(
+    '-password -refreshTokens'
+  );
 
   res
     .status(200)
-    .json(new ApiResponse(true, 'user login sucessfully', LoginUserData, 200));
+    .json(new ApiResponse(true, 'user login sucessfully', user, 200));
 });
 
 export { registerUser, loginUser };
