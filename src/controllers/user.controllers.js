@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/User.models.js';
 import { UploadOnCloudinery } from '../utils/cloudinery.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+// register user code here
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password, username, Fullname } = req.body;
   if (
@@ -56,4 +57,22 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(true, 'User created successfully', createdUser, 201));
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  // sabse pehle kaam user se email or password lena
+  const { email, password } = req.body;
+  // dusra kaam usko validate karna
+  if (!email) return new ApiError('email is required');
+  if (!password) return new ApiError('password is required');
+  // uske abad jo user aya hai usko res mein bhejna
+  const LoginUserData = await User.findOne({
+    $or: [{ email }, { password }],
+  });
+
+  if (!LoginUserData) return new ApiError('invelid cridintiols');
+
+  res
+    .status(200)
+    .json(new ApiResponse(true, 'user login sucessfully', LoginUserData, 200));
+});
+
+export { registerUser, loginUser };
