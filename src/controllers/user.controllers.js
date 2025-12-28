@@ -17,8 +17,7 @@ const generateAccesAndRefreshToken = async (userId) => {
   }
 };
 
-// register user code here
-
+// register user code here:
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password, username, Fullname } = req.body;
   if (
@@ -72,6 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(true, 'User created successfully', createdUser, 201));
 });
 
+// Login User COde Here:
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email) throw new ApiError('email is required');
@@ -91,9 +91,46 @@ const loginUser = asyncHandler(async (req, res) => {
     '-password -refreshTokens'
   );
 
-  res
+  const options = {
+    HttpOnly: true,
+    secure: true,
+  };
+
+  return res
     .status(200)
-    .json(new ApiResponse(true, 'user login sucessfully', user, 200));
+    .cookie('accessToken', accesToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(
+      new ApiResponse(true, 'user login sucessfully', {
+        User: accesToken,
+        refreshToken,
+      })
+    );
 });
 
-export { registerUser, loginUser };
+// Logout User Code Here:
+const LogoutUser = asyncHandler(async (req, res) => {
+  await User.findOneAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshTokens: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const options = {
+    HttpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie('accessToken', options)
+    .json(new ApiResponse(200, 'user loggedout'));
+});
+
+export { registerUser, loginUser, LogoutUser };
