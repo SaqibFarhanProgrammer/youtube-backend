@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/User.models.js';
 import { UploadOnCloudinery } from '../utils/cloudinery.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import JWT from 'jsonwebtoken';
 
 const generateAccesAndRefreshToken = async (userId) => {
   try {
@@ -103,7 +104,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(true, 'user login sucessfully', {
         User: accesToken,
-        userdata:loggedinUser,
+        userdata: loggedinUser,
         refreshToken,
       })
     );
@@ -134,4 +135,48 @@ const LogoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, 'user loggedout'));
 });
 
-export { registerUser, loginUser, LogoutUser };
+// refresh refresh token ocde here:
+const RefreshAccessToken = asyncHandler(async (req, res) => {
+  const incommingRefreshToken =
+    req.cookies.refreshToken || req.nody.refreshToken;
+  if (!incommingRefreshToken) throw new ApiError(401, 'unautjorized error');
+
+  try {
+    const decodedinfo = JWT.verify(
+      incommingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decodedinfo?._id);
+    if (!user) throw new ApiError(401, 'invelid refresh token');
+
+    if (incommingRefreshToken !== user?.refreshTokens) {
+      throw new ApiError(401, 'refresh token is expire or invelid');
+    }
+
+    const { accesToken, newrefreshToken } = await generateAccesAndRefreshToken(
+      user._id
+    );
+
+    const options = {
+      HttpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie('accessToken', accesToken, options)
+      .cookie('refreshToken', newrefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { accesToken, newrefreshToken },
+          'access token refreshd'
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, 'invelid access token ', error.message);
+  }
+});
+
+export { registerUser, loginUser, LogoutUser, RefreshAccessToken };
