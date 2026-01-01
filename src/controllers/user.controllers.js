@@ -179,4 +179,49 @@ const RefreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, LogoutUser, RefreshAccessToken };
+const ChangePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.body.user?._id);
+  if (!user.isPasswordCorrect(oldPassword)) {
+    throw new ApiError(401, " old password isn't currect ");
+  }
+  user.upassword = newPassword;
+  user.save({
+    validateBeforeSave: true,
+  });
+  return res.status(200).json(new ApiResponse('password changed successfully'));
+});
+
+const GetCurrentUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(200, req.user, 'user fethed successfully');
+});
+
+const ChangeAccountDetailsFullname = asyncHandler(async (req, res) => {
+  const { fullname } = req.body;
+  if (!fullname) throw new ApiError(401, 'fullname is requierd');
+
+  res.status(200).json(new ApiResponse(200, 'fullname  update successfully'));
+});
+
+const ChangeAccountDetailsAvatar = asyncHandler(async () => {
+  const LocalAvatarFilePath = req.file?.path;
+  if (!LocalAvatarFilePath) throw new ApiError(401, 'Avatar is requierd');
+
+  const Avatar = await UploadOnCloudinery(LocalAvatarFilePath);
+
+  User.Avatar = Avatar.url;
+  User.save({ validateBeforeSave: true });
+
+  res.status(200).json(new ApiResponse(200, 'Avatar update successfully'));
+});
+
+export {
+  registerUser,
+  loginUser,
+  LogoutUser,
+  RefreshAccessToken,
+  GetCurrentUser,
+  ChangePassword,
+  ChangeAccountDetailsFullname,
+  ChangeAccountDetailsAvatar,
+};
