@@ -199,8 +199,15 @@ const GetCurrentUser = asyncHandler(async (req, res) => {
 const ChangeAccountDetailsFullname = asyncHandler(async (req, res) => {
   const { fullname } = req.body;
   if (!fullname) throw new ApiError(401, 'fullname is requierd');
+  const user = await User.findById(req.user?._id);
+  user.Fullname = fullname;
+  user.save({
+    validateBeforeSave: true,
+  });
 
-  res.status(200).json(new ApiResponse(200, 'fullname  update successfully'));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'fullname  update successfully'));
 });
 
 const ChangeAccountDetailsAvatar = asyncHandler(async () => {
@@ -209,10 +216,18 @@ const ChangeAccountDetailsAvatar = asyncHandler(async () => {
 
   const Avatar = await UploadOnCloudinery(LocalAvatarFilePath);
 
-  User.Avatar = Avatar.url;
-  User.save({ validateBeforeSave: true });
-
-  res.status(200).json(new ApiResponse(200, 'Avatar update successfully'));
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        Avatar: Avatar.url,
+      },
+    },
+    { new: true }
+  ).select('-password');
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, 'Avatar update successfully'));
 });
 
 export {
