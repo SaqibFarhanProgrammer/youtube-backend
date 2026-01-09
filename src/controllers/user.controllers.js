@@ -230,6 +230,67 @@ const ChangeAccountDetailsAvatar = asyncHandler(async () => {
     .json(new ApiResponse(200, user, 'Avatar update successfully'));
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  if (!username) throw new ApiError(400, 'username is missing');
+
+  const channel = await User.aggregate([
+    {
+      $match: {
+        username: username?.toLowerCase(),
+      },
+      $lookup: {
+        from: 'subscription',
+        localField: '_id',
+        foreignField: 'channel',
+        as: 'subscribers',
+      },
+      $lookup: {
+        from: 'subscription',
+        localField: '_id',
+        foreignField: 'channel',
+        as: 'subscribedTo',
+      },
+      $addFields: {
+        SubscribersCount: {
+          $size: '$subscribers',
+        },
+        ChannelSubscribedToCount: {
+          $size: '$subscribers',
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user._id, '$subscribers.subscriber'] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        username: 1,
+        Fullname: 1,
+        Avatar: 1,
+        CoverPhoto: 1,
+        SubscribersCount: 1,
+        isSubscribed: 1,
+        ChannelSubscribedToCount: 1,
+      },
+    },
+  ]);
+
+  getUserChannelProfile();
+  console.log(channel);
+  if (channel?.length)
+    throw new ApiError(500, 'channel does not exits issue in pipline');
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, channel[0], 'channel found succesfully'));
+});
+
 export {
   registerUser,
   loginUser,
