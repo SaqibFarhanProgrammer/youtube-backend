@@ -16,7 +16,7 @@ function ajasd (params) {
 
 connectDB()
   .then(() => {
-    app.listen(process.env.PORT || 9000, () => {});
+    app.listen(process.env.PORT || 4000, () => {});
   })
   .catch((err) => {
     console.log('MongoDB Connection Faild From Index.js Root', err);

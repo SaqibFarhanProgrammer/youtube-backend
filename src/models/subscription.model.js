@@ -3,17 +3,17 @@ import mongoose, { Schema } from 'mongoose';
 const subscriptionSchema = mongoose.Schema(
   {
     subscriber: {
-      typr: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
     },
     channel: {
-      typr: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
     },
   },
-  {
-    TimeRanges: true,
-  }
+{
+  timestamps: true
+}
 );
 
 export const Subscription = mongoose.model('Subscription', subscriptionSchema);

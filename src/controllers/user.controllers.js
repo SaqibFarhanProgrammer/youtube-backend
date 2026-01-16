@@ -4,6 +4,7 @@ import { User } from '../models/User.models.js';
 import { UploadOnCloudinery } from '../utils/cloudinery.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import JWT from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 const generateAccesAndRefreshToken = async (userId) => {
   try {
@@ -238,30 +239,38 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   const channel = await User.aggregate([
     {
       $match: {
-        username: username?.toLowerCase(),
+        username: username.toLowerCase(),
       },
+    },
+    {
       $lookup: {
-        from: 'subscription',
+        from: 'subscriptions',
         localField: '_id',
         foreignField: 'channel',
         as: 'subscribers',
       },
+    },
+    {
       $lookup: {
-        from: 'subscription',
+        from: 'subscriptions',
         localField: '_id',
-        foreignField: 'channel',
+        foreignField: 'subscriber',
         as: 'subscribedTo',
       },
+    },
+    {
       $addFields: {
-        SubscribersCount: {
+        subscribersCount: {
           $size: '$subscribers',
         },
-        ChannelSubscribedToCount: {
-          $size: '$subscribers',
+        channelSubscribedToCount: {
+          $size: '$subscribedTo',
         },
         isSubscribed: {
           $cond: {
-            if: { $in: [req.user._id, '$subscribers.subscriber'] },
+            if: {
+              $in: [req.user?._id, '$subscribers.subscriber'],
+            },
             then: true,
             else: false,
           },
@@ -274,21 +283,32 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         Fullname: 1,
         Avatar: 1,
         CoverPhoto: 1,
-        SubscribersCount: 1,
+        subscribersCount: 1,
+        channelSubscribedToCount: 1,
         isSubscribed: 1,
-        ChannelSubscribedToCount: 1,
       },
     },
   ]);
 
-  getUserChannelProfile();
   console.log(channel);
-  if (channel?.length)
-    throw new ApiError(500, 'channel does not exits issue in pipline');
+
+  if (!channel?.length) {
+    throw new ApiError(404, 'channel does not exist');
+  }
 
   return res
     .status(200)
     .json(new ApiResponse(200, channel[0], 'channel found succesfully'));
+});
+
+const getUserWatchHistory = asyncHandler(async (req, res) => {
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
+    },
+  ]);
 });
 
 export {
@@ -300,4 +320,5 @@ export {
   ChangePassword,
   ChangeAccountDetailsFullname,
   ChangeAccountDetailsAvatar,
+  getUserChannelProfile,
 };
