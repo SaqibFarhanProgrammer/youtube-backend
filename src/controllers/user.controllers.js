@@ -343,6 +343,16 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistoryData,
+        ' watch history data fetched succesfully'
+      )
+    );
 });
 
 export {
@@ -355,4 +365,5 @@ export {
   ChangeAccountDetailsFullname,
   ChangeAccountDetailsAvatar,
   getUserChannelProfile,
+  getUserWatchHistory,
 };

@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import {
+  ChangeAccountDetailsAvatar,
   ChangeAccountDetailsFullname,
+  ChangePassword,
+  GetCurrentUser,
+  getUserChannelProfile,
+  getUserWatchHistory,
   loginUser,
   LogoutUser,
   RefreshAccessToken,
@@ -31,5 +36,16 @@ router.route('/login').post(loginUser);
 
 // secured Routes
 router.route('/logout').post(verifyJWT, LogoutUser);
-router.route('/refresh-token', RefreshAccessToken);
+router.route("/refresh-token").post(RefreshAccessToken)
+router.route('/change-password').post(verifyJWT, ChangePassword);
+router.route('/get-current-user').get(verifyJWT, GetCurrentUser);
+router
+  .route('/change-account-details')
+  .patch(verifyJWT, ChangeAccountDetailsFullname);
+router
+  .route('/chnage-account-details-avatar')
+  .patch(verifyJWT, upload.single('New_avatar'), ChangeAccountDetailsAvatar);
+
+router.route('/channel/:username').get(verifyJWT, getUserChannelProfile);
+router.route('/history').get(verifyJWT, getUserWatchHistory);
 export default router;
