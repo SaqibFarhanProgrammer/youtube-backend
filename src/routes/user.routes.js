@@ -36,11 +36,11 @@ router.route('/login').post(loginUser);
 
 // secured Routes
 router.route('/logout').post(verifyJWT, LogoutUser);
-router.route("/refresh-token").post(RefreshAccessToken)
+router.route('/refresh-token').post(RefreshAccessToken);
 router.route('/change-password').post(verifyJWT, ChangePassword);
 router.route('/get-current-user').get(verifyJWT, GetCurrentUser);
 router
-  .route('/change-account-details')
+  .route('/change-account-details-fullname')
   .patch(verifyJWT, ChangeAccountDetailsFullname);
 router
   .route('/chnage-account-details-avatar')

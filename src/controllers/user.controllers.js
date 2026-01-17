@@ -72,6 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(true, 'User created successfully', createdUser, 201));
 });
+// tested ✅
 
 // Login User COde Here:
 const loginUser = asyncHandler(async (req, res) => {
@@ -110,6 +111,8 @@ const loginUser = asyncHandler(async (req, res) => {
       })
     );
 });
+// tested ✅
+
 
 // Logout User Code Here:
 const LogoutUser = asyncHandler(async (req, res) => {
@@ -135,6 +138,7 @@ const LogoutUser = asyncHandler(async (req, res) => {
     .clearCookie('accessToken', options)
     .json(new ApiResponse(200, 'user loggedout'));
 });
+// tested ✅
 
 // refresh refresh token ocde here:
 const RefreshAccessToken = asyncHandler(async (req, res) => {
@@ -182,37 +186,53 @@ const RefreshAccessToken = asyncHandler(async (req, res) => {
 
 const ChangePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-  const user = await User.findById(req.body.user?._id);
-  if (!user.isPasswordCorrect(oldPassword)) {
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(501, 'user is not found in cahnge password func');
+  }
+  if (!user?.isPasswordCorrect(oldPassword)) {
     throw new ApiError(401, " old password isn't currect ");
   }
   user.upassword = newPassword;
   user.save({
     validateBeforeSave: true,
   });
-  return res.status(200).json(new ApiResponse('password changed successfully'));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'password changed successfully'));
 });
+// tested ✅
 
 const GetCurrentUser = asyncHandler(async (req, res) => {
+  console.log(req.user);
+
   return res.status(200).json(200, req.user, 'user fethed successfully');
 });
+// tested ✅
+
 
 const ChangeAccountDetailsFullname = asyncHandler(async (req, res) => {
   const { fullname } = req.body;
+  console.log(fullname);
+  
   if (!fullname) throw new ApiError(401, 'fullname is requierd');
   const user = await User.findById(req.user?._id);
   user.Fullname = fullname;
   user.save({
     validateBeforeSave: true,
-  });
+  }); 
 
   return res
     .status(200)
     .json(new ApiResponse(200, 'fullname  update successfully'));
 });
+// tested ✅
 
-const ChangeAccountDetailsAvatar = asyncHandler(async () => {
+const ChangeAccountDetailsAvatar = asyncHandler(async (req,res) => {
   const LocalAvatarFilePath = req.file?.path;
+  
   if (!LocalAvatarFilePath) throw new ApiError(401, 'Avatar is requierd');
 
   const Avatar = await UploadOnCloudinery(LocalAvatarFilePath);
@@ -230,6 +250,7 @@ const ChangeAccountDetailsAvatar = asyncHandler(async () => {
     .status(200)
     .json(new ApiResponse(200, user, 'Avatar update successfully'));
 });
+// tested ✅
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
@@ -290,16 +311,19 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
   ]);
 
-  console.log(channel);
-
   if (!channel?.length) {
     throw new ApiError(404, 'channel does not exist');
   }
+
+  console.log(channel);
+  
 
   return res
     .status(200)
     .json(new ApiResponse(200, channel[0], 'channel found succesfully'));
 });
+// tested ✅
+
 
 const getUserWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
@@ -343,7 +367,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
+  
   return res
     .status(200)
     .json(
@@ -354,6 +378,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
       )
     );
 });
+// tested ✅
 
 export {
   registerUser,
