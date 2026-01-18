@@ -17,9 +17,11 @@ app.use(cookieParser());
 
 // import routes here
 import UserRouter from './routes/user.routes.js';
+import videoRouter from './routes/video.route.js';
 
 app.use('/api/v1/users', UserRouter);
-// hoga mein ne yahan se kaha ke bhai agar apka url aysa 
+app.use('/api/v1/video', videoRouter);
+// hoga mein ne yahan se kaha ke bhai agar apka url aysa
 // https:localhost:7000/api/v1/users/
 //  ye ab ye jo /user hai iske baad jo bhi method mein callkarraha hu control sara wahan jayega
 // abhi mera control user.routes.js mein jayega wahan jaa
