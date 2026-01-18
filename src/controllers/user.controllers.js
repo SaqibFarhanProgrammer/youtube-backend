@@ -113,14 +113,13 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 // tested ✅
 
-
 // Logout User Code Here:
 const LogoutUser = asyncHandler(async (req, res) => {
   await User.findOneAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshTokens: undefined,
+      $unset: {
+        refreshTokens: 1,
       },
     },
     {
@@ -212,17 +211,16 @@ const GetCurrentUser = asyncHandler(async (req, res) => {
 });
 // tested ✅
 
-
 const ChangeAccountDetailsFullname = asyncHandler(async (req, res) => {
   const { fullname } = req.body;
   console.log(fullname);
-  
+
   if (!fullname) throw new ApiError(401, 'fullname is requierd');
   const user = await User.findById(req.user?._id);
   user.Fullname = fullname;
   user.save({
     validateBeforeSave: true,
-  }); 
+  });
 
   return res
     .status(200)
@@ -230,9 +228,9 @@ const ChangeAccountDetailsFullname = asyncHandler(async (req, res) => {
 });
 // tested ✅
 
-const ChangeAccountDetailsAvatar = asyncHandler(async (req,res) => {
+const ChangeAccountDetailsAvatar = asyncHandler(async (req, res) => {
   const LocalAvatarFilePath = req.file?.path;
-  
+
   if (!LocalAvatarFilePath) throw new ApiError(401, 'Avatar is requierd');
 
   const Avatar = await UploadOnCloudinery(LocalAvatarFilePath);
@@ -316,14 +314,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   }
 
   console.log(channel);
-  
 
   return res
     .status(200)
     .json(new ApiResponse(200, channel[0], 'channel found succesfully'));
 });
 // tested ✅
-
 
 const getUserWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
@@ -367,7 +363,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  
+
   return res
     .status(200)
     .json(
