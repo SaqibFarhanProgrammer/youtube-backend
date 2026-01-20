@@ -20,6 +20,8 @@ const Header = () => {
         </Link>
       </div>
 
+
+{/*  */}
       <div className="flex items-center flex-1 max-w-[720px] ml-10">
         <div className="flex flex-1 items-center bg-[#121212] border border-[#303030] rounded-l-full px-4 h-10 ml-4">
           <input
