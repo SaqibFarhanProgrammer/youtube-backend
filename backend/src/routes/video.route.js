@@ -3,8 +3,10 @@ import { upload } from '../middleware/multer.js';
 import verifyJWT from '../middleware/auth.middleware.js';
 import {
   deleteVideo,
+  getAllVideos,
   getVideoById,
   publishAVideo,
+  togglePublishStatus,
   updateVideo,
 } from '../controllers/video.controller.js';
 const router = Router();
@@ -29,5 +31,8 @@ router.route('/delete/:videoID').get(deleteVideo);
 router
   .route('/update-video/:videoId')
   .post(verifyJWT, upload.single('newThumbnail'), updateVideo);
-
+router
+  .route('/toggle-ispublished/:videoId')
+  .get(verifyJWT, togglePublishStatus);
+router.route('/').get(getAllVideos);
 export default router;

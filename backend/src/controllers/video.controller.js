@@ -26,7 +26,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
   if (!video_cloudinery)
     throw new ApiError(401, 'failed to upload video on cloudinery');
 
-  const { url, length, duration, created_at } = video_cloudinery;
+  const { url, duration } = video_cloudinery;
 
   const MongoDB_video = await Video.create({
     title,
@@ -51,7 +51,23 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
   //TODO: get all videos based on query, sort, pagination
+
+  let filter = {
+    isPublished: true,
+  };
+
+  if (query) {
+    filter.$or = [{ title: query }, { description: query }];
+  }
+  const skip = (page - 1) * limit;
+
+  const videos = await Video.find(filter).skip(skip).limit(limit);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'fetched videos succefully ', videos));
 });
+
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   if (!videoId) throw new ApiError(401, 'video not found');
@@ -109,6 +125,19 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+
+  const video = await Video.findById(videoId);
+  if (!video) {
+    throw new ApiError(401, 'video not found to toggle private or publish');
+  }
+
+  video.isPublished = video.isPublished === false ? true : false;
+
+  video.save({
+    validateBeforeSave: true,
+  });
+
+  return res.status(200).json(new ApiResponse(200, 'toggled succecfully'));
 });
 
 export {
