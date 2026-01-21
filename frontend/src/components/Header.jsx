@@ -1,10 +1,9 @@
-
-import React, { useState } from 'react';
-import { Menu, Search, Mic, Video, Bell, User, LayoutGrid } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Menu, Search, Mic, Video, Bell, User, LayoutGrid } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] flex items-center justify-between px-4 z-50">
@@ -16,12 +15,12 @@ const Header = () => {
           <div className="bg-[#ff0000] p-1 rounded-lg">
             <LayoutGrid size={20} color="white" fill="white" />
           </div>
-          <span className="text-white font-bold tracking-tighter text-xl">YouTube</span>
+          <span className="text-white font-bold tracking-tighter text-xl">
+            YouTube
+          </span>
         </Link>
       </div>
 
-
-{/*  */}
       <div className="flex items-center flex-1 max-w-[720px] ml-10">
         <div className="flex flex-1 items-center bg-[#121212] border border-[#303030] rounded-l-full px-4 h-10 ml-4">
           <input
@@ -46,7 +45,9 @@ const Header = () => {
         </button>
         <button className="p-2 hover:bg-[#272727] rounded-full transition-colors relative">
           <Bell size={24} color="#ffffff" />
-          <span className="absolute top-1 right-1 bg-[#cc0000] text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center">9+</span>
+          <span className="absolute top-1 right-1 bg-[#cc0000] text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center">
+            9+
+          </span>
         </button>
         <div className="ml-2 w-8 h-8 rounded-full overflow-hidden cursor-pointer">
           <img src="https://picsum.photos/seed/my-avatar/40/40" alt="profile" />

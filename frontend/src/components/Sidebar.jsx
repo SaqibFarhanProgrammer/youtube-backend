@@ -34,7 +34,7 @@ const SidebarSection = ({ items, title }) => {
 
 const Sidebar= () => {
   return (
-    <aside className="fixed left-0 top-14 bottom-0 w-60 bg-[#0f0f0f] overflow-y-auto z-40 hidden lg:block">
+    <aside className="fixed sidebar left-0 top-14 bottom-0 w-60 bg-[#0f0f0f] overflow-y-auto z-40 hidden lg:block">
       <SidebarSection items={SIDEBAR_PRIMARY} />
       <SidebarSection items={SIDEBAR_SECONDARY} title="You" />
       <SidebarSection items={SIDEBAR_EXPLORE} title="Explore" />

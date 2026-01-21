@@ -5,9 +5,9 @@ const videoSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-    },
+    },  
     description: String,
-    videoFile: {
+    VideoURL: {
       type: String,
       required: true,
     },
