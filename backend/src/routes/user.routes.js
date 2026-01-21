@@ -49,3 +49,4 @@ router
 router.route('/channel/:username').get(verifyJWT, getUserChannelProfile);
 router.route('/history').get(verifyJWT, getUserWatchHistory);
 export default router;
+  
