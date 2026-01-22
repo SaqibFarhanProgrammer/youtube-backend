@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { Video } from '../models/video.models.js';
 import { UploadOnCloudinery } from '../utils/cloudinery.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { Like } from '../models/likes.model.js';
 
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
@@ -120,11 +121,43 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'toggled succecfully'));
 });
 
+const GetVideoLikes = asyncHandler(async (req, res) => {
+  const { videoID } = req.params;
+  const Likes = await Video.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(videoID),
+      },
+    },
+    //1 pipline
+
+    {
+      $lookup: {
+        from: 'likes',
+        localField: '_id',
+        foreignField: 'video',
+        as: 'likesData',
+      },
+    },
+    {
+      $addFields: {
+        likesCount: { $size: '$likesData' },
+      },
+    },
+    //3 pipline
+  ]);
+
+  console.log(Likes);
+
+  return res.status(200).json(200, Like, 'likes fetched');
+});
+
 export {
   getAllVideos,
   publishAVideo,
   getVideoById,
   updateVideo,
   deleteVideo,
+  GetVideoLikes,
   togglePublishStatus,
 };
