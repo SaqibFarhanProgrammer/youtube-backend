@@ -15,10 +15,14 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
   const thumbnail_local_path = req.files?.multer_thumbnail[0]?.path;
   const video_local_path = req.files?.multer_video[0]?.path;
+
+
   if (!thumbnail_local_path)
     throw new ApiError(401, 'uploaded thumbnail from req.files is  not found');
   if (!video_local_path)
     throw new ApiError(401, 'uploaded video from req.files is  not found');
+
+
   const thumbnail_cloudinery = await UploadOnCloudinery(thumbnail_local_path);
   const video_cloudinery = await UploadOnCloudinery(video_local_path);
 
@@ -39,6 +43,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
     isPublished: true,
     views: 0,
   });
+
+
   if (!MongoDB_video) {
     throw new ApiError(500, 'error to create a video on mongodb ');
   }
@@ -53,9 +59,13 @@ const getAllVideos = asyncHandler(async (req, res) => {
   let filter = {
     isPublished: true,
   };
+
+
   if (query) {
     filter.$or = [{ title: query }, { description: query }];
   }
+
+
   const skip = (page - 1) * limit;
   const videos = await Video.find(filter).skip(skip).limit(limit);
   return res
@@ -65,8 +75,12 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+
   if (!videoId) throw new ApiError(401, 'video not found');
+
+
   const video = await Video.findById(videoId);
+
   res
     .status(200)
     .json(new ApiResponse(200, 'videofetched succeccfully', video));
@@ -77,21 +91,33 @@ const updateVideo = asyncHandler(async (req, res) => {
   //TODO: update video details like title, description, thumbnail
   const { title, description } = req.body;
   const NewThumbnailLocalFilePath = req.file.path;
+
+
   if (!NewThumbnailLocalFilePath)
     throw new ApiError(401, 'tthumbnail not found');
+
+
   const NewThumbnail_Cloudinery = await UploadOnCloudinery(
     NewThumbnailLocalFilePath
   );
+
+
   if (!NewThumbnail_Cloudinery)
     throw new ApiError(500, 'failed to upload new thumbnail oon cloudinery');
+
+
   const video = await Video.findById(videoId);
   if (!video) throw new ApiError(401, 'video not found to update');
+
+
   video.title = title;
   video.description = description;
   video.thumbnail = NewThumbnail_Cloudinery.url;
   video.save({
     validateBeforeSave: true,
   });
+
+
   return res
     .status(200)
     .json(new ApiResponse(200, 'video updated successfully'));
@@ -99,6 +125,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoID } = req.params;
+
   if (await Video.deleteOne({ _id: videoID })) {
     return res
       .status(200)
@@ -110,19 +137,25 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+
   const video = await Video.findById(videoId);
+
   if (!video) {
     throw new ApiError(401, 'video not found to toggle private or publish');
   }
+
   video.isPublished = video.isPublished === false ? true : false;
+
   video.save({
     validateBeforeSave: true,
   });
+
   return res.status(200).json(new ApiResponse(200, 'toggled succecfully'));
 });
 
 const GetVideoLikes = asyncHandler(async (req, res) => {
   const { videoID } = req.params;
+
   const Likes = await Video.aggregate([
     {
       $match: {
@@ -147,7 +180,6 @@ const GetVideoLikes = asyncHandler(async (req, res) => {
     //3 pipline
   ]);
 
-  console.log(Likes);
 
   return res.status(200).json(200, Like, 'likes fetched');
 });

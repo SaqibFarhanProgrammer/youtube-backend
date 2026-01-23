@@ -1,16 +1,35 @@
 import mongoose from 'mongoose';
-import { Comment } from '../models/comment.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { Comment } from '../models/comments.model.js';
+
 const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
+
   const { page = 1, limit = 10 } = req.query;
 });
 
 const addComment = asyncHandler(async (req, res) => {
   // TODO: add a comment to a video
+  const { content } = req.body;
+  if (!content || content === '') {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, 'comment content is requierd'));
+  }
+
+  const comment = await Comment.create({
+    
+
+    content: content,
+    
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, comment, 'add comment succefylly'));
 });
 
 const updateComment = asyncHandler(async (req, res) => {
