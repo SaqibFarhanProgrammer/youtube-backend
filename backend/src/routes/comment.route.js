@@ -5,6 +5,6 @@ import verifyJWT from "../middleware/auth.middleware.js";
 const router = Router()
 
 
-router.route("/add-comment").post( verifyJWT,addComment)
+router.route("/add-comment/:videoId").post( verifyJWT,addComment)
 
 export default router

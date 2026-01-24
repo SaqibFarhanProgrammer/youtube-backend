@@ -61,20 +61,17 @@ userschema.pre('save', async function (next) {
     next();
   } catch (error) {
     console.log(error);
-  } 
-}); 
+  }
+});
 
 userschema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
-  
+
 userschema.methods.generateAccessToken = function () {
   return JWT.sign(
     {
       _id: this._id,
-      username: this.username,
-      password: this.password,
-      fullname: this.fullname,
     },
 
     process.env.ACCESS_TOKEN_SECRET,

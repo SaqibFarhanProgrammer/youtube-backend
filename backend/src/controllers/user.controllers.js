@@ -9,10 +9,27 @@ import mongoose from 'mongoose';
 const generateAccesAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(
+            400,
+            'user not found in gen acces token and ref token fnc'
+          )
+        );
+    }
     const accesToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
-    user.refreshTokens = refreshToken;
-    user.save({ validateBeforeSave: false });
+
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        refreshToken: refreshToken,
+      },
+      { new: true }
+    );
     return { accesToken, refreshToken };
   } catch (error) {
     throw new ApiError(500, 'somthing went wrong');
@@ -95,8 +112,9 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   const options = {
-    HttpOnly: true,
+    httpOnly: false,
     secure: true,
+    sameSite: 'none',
   };
 
   return res

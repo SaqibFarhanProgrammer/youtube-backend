@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { Comment } from '../models/comments.model.js';
+import { Video } from '../models/video.models.js';
 
 const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
@@ -13,6 +14,16 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const addComment = asyncHandler(async (req, res) => {
   // TODO: add a comment to a video
+
+  const { videoId } = req.params;
+
+  //TODO: toggle like on video
+  const video = await Video.findOne({
+    _id: videoId,
+  });
+
+  if (!video) throw new ApiError(401, 'video to be comment not found');
+
   const { content } = req.body;
   if (!content || content === '') {
     return res
@@ -21,10 +32,8 @@ const addComment = asyncHandler(async (req, res) => {
   }
 
   const comment = await Comment.create({
-    
-
     content: content,
-    
+    video:videoId
   });
 
   return res

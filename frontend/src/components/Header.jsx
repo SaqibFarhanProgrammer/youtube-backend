@@ -1,12 +1,26 @@
 import React, { useState } from "react";
 import { Menu, Search, Mic, Video, Bell, User, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  async function handlebtn() {
+    await axios.get("http://localhost:4000/api/v1/users/logout", 
+    ).then((res)=>{
+      console.log(res);
+      
+    });
 
+    console.log('cliked');
+    
+  }
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] flex items-center justify-between px-4 z-50">
+      <button className="w-200 h-200 text-white" onClick={handlebtn}>
+        submit login
+      </button>
+
       <div className="flex items-center gap-4">
         <button className="p-2 hover:bg-[#272727] rounded-full transition-colors">
           <Menu size={24} color="#ffffff" />
