@@ -6,14 +6,16 @@ import axios from "axios";
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   async function handlebtn() {
-    await axios.get("http://localhost:4000/api/v1/users/logout", 
-    ).then((res)=>{
-      console.log(res);
-      
-    });
+    await axios
+      .post("http://localhost:4000/api/v1/users/login", {
+        email: "2@gmail.com",
+        password: "12345",
+      })
+      .then((res) => {
+        console.log(res);
+      });
 
-    console.log('cliked');
-    
+    console.log("cliked");
   }
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] flex items-center justify-between px-4 z-50">

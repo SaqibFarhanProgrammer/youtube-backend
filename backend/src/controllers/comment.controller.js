@@ -25,7 +25,7 @@ const addComment = asyncHandler(async (req, res) => {
   if (!video) throw new ApiError(401, 'video to be comment not found');
 
   const { content } = req.body;
-  if (!content || content === '') {
+  if (!content ) {
     return res
       .status(400)
       .json(new ApiResponse(400, 'comment content is requierd'));
@@ -33,7 +33,7 @@ const addComment = asyncHandler(async (req, res) => {
 
   const comment = await Comment.create({
     content: content,
-    video:videoId
+    video: videoId,
   });
 
   return res

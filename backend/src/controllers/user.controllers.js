@@ -115,12 +115,18 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: false,
     secure: true,
     sameSite: 'none',
+    maxAge: 2 * 24 * 60 * 60 * 1000,
   };
 
   return res
     .status(200)
     .cookie('accessToken', accesToken, options)
-    .cookie('refreshToken', refreshToken, options)
+    .cookie('refreshToken', refreshToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
     .json(
       new ApiResponse(true, 'user login sucessfully', {
         User: accesToken,
@@ -180,15 +186,16 @@ const RefreshAccessToken = asyncHandler(async (req, res) => {
       user._id
     );
 
-    const options = {
-      HttpOnly: true,
-      secure: true,
-    };
-
     return res
       .status(200)
-      .cookie('accessToken', accesToken, options)
-      .cookie('refreshToken', newrefreshToken, options)
+      .cookie('accessToken', accesToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .cookie('refreshToken', newrefreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
       .json(
         new ApiResponse(
           200,
