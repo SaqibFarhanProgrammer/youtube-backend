@@ -7,13 +7,13 @@ import { Video } from '../models/video.models.js';
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  
+
   const userID = req.user?._id;
-  
+
   if (!userID) throw new ApiError(401, 'please login');
   //TODO: toggle like on video
   const video = await Video.findOne({
-    _id:videoId
+    _id: videoId,
   });
 
   if (!video) throw new ApiError(401, 'video to be like not found');
