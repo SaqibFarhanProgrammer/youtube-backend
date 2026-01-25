@@ -94,6 +94,14 @@ const updateComment = asyncHandler(async (req, res) => {
 const deleteComment = asyncHandler(async (req, res) => {
   // TODO: delete a comment
   const { commentid } = req.body;
+  const userID = req.user?._id;
+
+  if (!userID) throw new ApiError(401, 'please login');
+
+  const comment = await Comment.findById(commentid);
+  if (!comment) throw new ApiError(404, 'comment not found');
+  if (comment.commentedBy.toString() !== userID.toString())
+    throw new ApiError(401, 'unauthorized to delete comment');
 
   if (await Comment.deleteOne({ _id: commentid })) {
     return res
