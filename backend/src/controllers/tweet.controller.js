@@ -24,6 +24,24 @@ const createTweet = asyncHandler(async (req, res) => {
 
 const getUserTweets = asyncHandler(async (req, res) => {
   // TODO: get user tweets
+  const userID = req.user?._id;
+
+  const tweets = await User.aggregate([
+    { $match: { _id: userID } },
+    {
+      $lookup: {
+        from: 'tweets',
+        localField: '_id',
+        foreignField: 'owner',
+        as: 'tweets',
+      },
+    },
+  ]);
+
+  console.log(tweets[0].tweets);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Tweet get successfully', tweets));
 });
 
 const updateTweet = asyncHandler(async (req, res) => {
@@ -50,7 +68,6 @@ const updateTweet = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, 'Tweet updated successfully', updatedTweet));
 });
-
 
 const deleteTweet = asyncHandler(async (req, res) => {
   //TODO: delete tweet
