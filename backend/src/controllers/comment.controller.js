@@ -9,6 +9,9 @@ const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
 
+
+  
+
   const { page = 1, limit = 10 } = req.query;
 });
 
@@ -25,7 +28,7 @@ const addComment = asyncHandler(async (req, res) => {
   if (!video) throw new ApiError(401, 'video to be comment not found');
 
   const { content } = req.body;
-  if (!content ) {
+  if (!content) {
     return res
       .status(400)
       .json(new ApiResponse(400, 'comment content is requierd'));
@@ -43,10 +46,36 @@ const addComment = asyncHandler(async (req, res) => {
 
 const updateComment = asyncHandler(async (req, res) => {
   // TODO: update a comment
+  const { comment_content, commentid } = req.body;
+
+  if (!comment_content) throw new ApiError(401, 'content is requierd');
+
+  const comment = await Comment.findById(commentid);
+
+  comment.content = comment_content;
+
+  comment.save({
+    validateBeforeSave: true,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'comment update succefully'));
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
   // TODO: delete a comment
+  const { commentid } = req.body;
+
+  if (await Comment.deleteOne({ _id: commentid })) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'comment delte succefully'));
+  } else {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, 'faiiled to delte comment'));
+  }
 });
 
 export { getVideoComments, addComment, updateComment, deleteComment };
