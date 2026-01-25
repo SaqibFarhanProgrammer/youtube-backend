@@ -8,7 +8,8 @@ import { Video } from '../models/video.models.js';
 const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
-
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
   const video = await Video.findOne({
     _id: videoId,
   });
@@ -34,13 +35,13 @@ const getVideoComments = asyncHandler(async (req, res) => {
         commentList: '$comments',
       },
     },
-  ]);
-
-  const { page = 1, limit = 10 } = req.query;
+  ])
+    .skip(skip)
+    .limit(limit);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'get video comments succefully'));
+    .json(new ApiResponse(200, comments, 'get video comments succefully'));
 });
 
 const addComment = asyncHandler(async (req, res) => {
@@ -75,12 +76,12 @@ const addComment = asyncHandler(async (req, res) => {
 const updateComment = asyncHandler(async (req, res) => {
   // TODO: update a comment
   const { comment_content, commentid } = req.body;
-
+  const userid = req.user?._id;
   if (!comment_content) throw new ApiError(401, 'content is requierd');
 
   const comment = await Comment.findById(commentid);
 
-  comment.content = comment_content;
+  if (comment.owner === userid) comment.content = comment_content;
 
   comment.save({
     validateBeforeSave: true,
