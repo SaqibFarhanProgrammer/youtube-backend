@@ -9,10 +9,38 @@ const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
 
+  const video = await Video.findOne({
+    _id: videoId,
+  });
 
-  
+  if (!video) throw new ApiError(401, 'video not found');
+
+  const comments = await Video.aggregate([
+    {
+      $match: { _id: new mongoose.Types.ObjectId(videoId) },
+    },
+
+    {
+      $lookup: {
+        from: 'comments',
+        localField: '_id',
+        foreignField: 'video',
+        as: 'comments',
+      },
+    },
+    {
+      $addFields: {
+        commentsCount: { $size: '$comments' },
+        commentList: '$comments',
+      },
+    },
+  ]);
 
   const { page = 1, limit = 10 } = req.query;
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'get video comments succefully'));
 });
 
 const addComment = asyncHandler(async (req, res) => {
