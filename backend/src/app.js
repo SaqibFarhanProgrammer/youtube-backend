@@ -21,12 +21,15 @@ import videoRouter from './routes/video.route.js';
 import likeRouter from './routes/like.route.js';
 import commentRoute from './routes/comment.route.js';
 import tweetroute from './routes/tweet.route.js';
+import playlistRouter from './routes/playlist.route.js';
 
 app.use('/api/v1/users', UserRouter);
 app.use('/api/v1/video', videoRouter);
 app.use('/api/v1/like', likeRouter);
 app.use('/api/v1/comment', commentRoute);
 app.use('/api/v1/tweet', tweetroute);
+app.use('/api/v1/playlist', playlistRouter);
+
 // hoga mein ne yahan se kaha ke bhai agar apka url aysa
 // https:localhost:7000/api/v1/users/
 //  ye ab ye jo /user hai iske baad jo bhi method mein callkarraha hu control sara wahan jayega
