@@ -25,18 +25,13 @@ const createPlaylist = asyncHandler(async (req, res) => {
 });
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
-
-
-  const { userId } = req.user?._id;
-  console.log(userId);
-  
+  const userId = req.user._id;
 
   if (!userId) {
     throw new ApiError(400, 'Invalid user ID');
   }
 
   const playlists = await Playlist.find({ owner: userId }).populate('videos');
-
 
   res
     .status(200)
@@ -131,11 +126,14 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
   //TODO: update playlist
 
-  if (!isValidObjectId(playlistId)) {
+  if (!playlistId) {
     throw new ApiError(400, 'Invalid playlist ID');
   }
 
   const playlist = await Playlist.findById(playlistId);
+  if (playlist.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'You are not authorized to update this playlist');
+  }
 
   if (!playlist) {
     throw new ApiError(404, 'Playlist not found');

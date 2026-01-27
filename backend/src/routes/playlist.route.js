@@ -13,8 +13,8 @@ const router = Router();
 
 router.route('/create-playlist').post(verifyJWT, createPlaylist);
 router.route('/user-playlists').get(verifyJWT, getUserPlaylists);
-router.route('/:playlistId').get(verifyJWT, getPlaylistById);
-router.route('/:playlistId').put(verifyJWT, updatePlaylist);
+router.route('/getplaylist-byid/:playlistId').get(verifyJWT, getPlaylistById);
+router.route('/update-playlist/:playlistId').put(verifyJWT, updatePlaylist);
 router.route('/:playlistId').delete(verifyJWT, deletePlaylist);
 router
   .route('/:playlistId/add-video/:videoId')
