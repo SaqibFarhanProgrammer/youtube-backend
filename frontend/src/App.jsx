@@ -6,7 +6,6 @@ import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Watch from './pages/Watch';
 import Placeholder from './pages/Placeholder';
-import axios from 'axios';
 
 const App= () => {
   const location = useLocation();
@@ -48,8 +47,6 @@ const App= () => {
         </main>
       </div>
 
-      <div className='h-screen w-full'>
-      </div>
     </div>
   );
 };

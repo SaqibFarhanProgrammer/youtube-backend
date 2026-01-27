@@ -1,27 +1,10 @@
 import React, { useState } from "react";
 import { Menu, Search, Mic, Video, Bell, User, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  async function handlebtn() {
-    await axios
-      .post("http://localhost:4000/api/v1/users/login", {
-        email: "2@gmail.com",
-        password: "12345",
-      })
-      .then((res) => {
-        console.log(res);
-      });
-
-    console.log("cliked");
-  }
   return (
     <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] flex items-center justify-between px-4 z-50">
-      <button className="w-200 h-200 text-white" onClick={handlebtn}>
-        submit login
-      </button>
 
       <div className="flex items-center gap-4">
         <button className="p-2 hover:bg-[#272727] rounded-full transition-colors">
@@ -42,8 +25,6 @@ const Header = () => {
           <input
             type="text"
             placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-transparent border-none outline-none text-white w-full text-base placeholder-[#888888]"
           />
         </div>
